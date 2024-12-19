@@ -1,15 +1,20 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from "react";
+import { supabase } from "../supabaseClient";
 
 interface FormData {
   nombres: string;
   apellidos: string;
   email: string;
-  telefono: string;
-  nombrePapas: string;
-  telefonoPapas: string;
+  rut: string;
+  edad: number | "";
+  direccion: string;
+  ciudad_comuna: string;
+  telefono_participante: string;
+  telefono_apoderado: string;
   instrumento: string;
-  aniosAprendizaje: number | "";
+  anios_estudio: number | "";
+  profesor: string;
+  enlace_video: string;
 }
 
 const Formulario: React.FC = () => {
@@ -17,99 +22,102 @@ const Formulario: React.FC = () => {
     nombres: "",
     apellidos: "",
     email: "",
-    telefono: "",
-    nombrePapas: "",
-    telefonoPapas: "",
+    rut: "",
+    edad: "",
+    direccion: "",
+    ciudad_comuna: "",
+    telefono_participante: "",
+    telefono_apoderado: "",
     instrumento: "",
-    aniosAprendizaje: "",
+    anios_estudio: "",
+    profesor: "",
+    enlace_video: "",
   });
-
-  const [inscripciones, setInscripciones] = useState<FormData[]>([]);
-
-  // Cargar inscripciones desde el backend
-  useEffect(() => {
-    axios.get("http://localhost:5000/inscripciones").then((response) => {
-      setInscripciones(response.data);
-    });
-  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: name === "aniosAprendizaje" ? parseInt(value) || "" : value,
+      [name]: name === "edad" || name === "anios_estudio" ? parseInt(value) || "" : value,
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Enviar inscripción al backend
-    axios.post("http://localhost:5000/inscripciones", formData).then(() => {
+    const { data, error } = await supabase.from("inscripciones").insert([formData]);
+
+    if (error) {
+      alert("Hubo un error al enviar la inscripción");
+      console.error(error);
+    } else {
       alert("Inscripción registrada con éxito!");
       setFormData({
         nombres: "",
         apellidos: "",
         email: "",
-        telefono: "",
-        nombrePapas: "",
-        telefonoPapas: "",
+        rut: "",
+        edad: "",
+        direccion: "",
+        ciudad_comuna: "",
+        telefono_participante: "",
+        telefono_apoderado: "",
         instrumento: "",
-        aniosAprendizaje: "",
+        anios_estudio: "",
+        profesor: "",
+        enlace_video: "",
       });
-
-      // Actualizar la lista de inscripciones
-      axios.get("http://localhost:5000/inscripciones").then((response) => {
-        setInscripciones(response.data);
-      });
-    });
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-400 via-yellow-300 to-green-400 p-4">
-      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-lg border-4 border-yellow-500">
-        <h1 className="text-3xl font-bold text-center text-orange-600 mb-4">
-          Inscripciones 🎵
-        </h1>
+    <div className="min-h-screen bg-gradient-to-br from-green-400 via-yellow-300 to-orange-400 flex items-center justify-center">
+      <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-3xl">
+        <h1 className="text-3xl font-bold text-center text-green-700 mb-6">Inscripciones 🎵</h1>
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Formulario */}
           <div>
-            <label className="block text-lg font-medium text-gray-700">Nombres</label>
+            <label className="block text-lg font-medium">Nombre</label>
+            <div className="flex gap-4">
+              <input
+                type="text"
+                name="nombres"
+                value={formData.nombres}
+                onChange={handleChange}
+                required
+                className="w-1/2 p-3 border rounded-lg"
+                placeholder="Nombre"
+              />
+              <input
+                type="text"
+                name="apellidos"
+                value={formData.apellidos}
+                onChange={handleChange}
+                required
+                className="w-1/2 p-3 border rounded-lg"
+                placeholder="Apellidos"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-lg font-medium">Correo electrónico</label>
             <input
-              type="text"
-              name="nombres"
-              value={formData.nombres}
+              type="email"
+              name="email"
+              value={formData.email}
               onChange={handleChange}
               required
-              className="mt-1 w-full p-3 border rounded-lg shadow-sm focus:ring-orange-500 focus:border-orange-500"
-              placeholder="Escribe tu nombre"
+              className="w-full p-3 border rounded-lg"
+              placeholder="trompetista@email.com"
             />
           </div>
-          {/* Más campos */}
+          {/* Más campos aquí */}
           <button
             type="submit"
-            className="w-full py-3 bg-orange-500 text-white rounded-lg font-bold hover:bg-orange-600 shadow-lg transition duration-300"
+            className="w-full py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700"
           >
-            Enviar 🚀
+            Enviar inscripción 🚀
           </button>
         </form>
-
-        {/* Lista de inscripciones */}
-        <div className="mt-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Lista de Inscripciones</h2>
-          <ul className="space-y-2">
-            {inscripciones.map((inscripcion, index) => (
-              <li key={index} className="bg-yellow-100 p-3 rounded-lg shadow-md border">
-                <p>
-                  <b>Nombre:</b> {inscripcion.nombres} {inscripcion.apellidos}
-                </p>
-                <p>
-                  <b>Email:</b> {inscripcion.email}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </div>
       </div>
     </div>
   );
