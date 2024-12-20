@@ -186,14 +186,14 @@ const Formulario: React.FC = () => {
         <p className="text-gray-700 text-lg leading-7 mb-8 text-justify">
           La actividad se realizó durante sus primeros años en la Isla Mancera, no obstante su crecimiento obligó a
           buscar nuevas dependencias en Niebla y Valdivia. De esta forma se ha proyectado como el campamento más
-          importante del sur de Chile.
+          significativo del sur de Chile.
         </p>
         <p className="text-gray-700 text-lg leading-7 mb-8 text-justify">
           Somos una gran comunidad que cada año suma nuevos integrantes y que se mantiene activa en el compromiso de la
           generación de espacios seguros para el desarrollo de habilidades artísticas que sabemos contribuyen a tener
           una mejor sociedad.
         </p>
-        <p className="text-gray-800 text-lg font-bold text-center mb-8">¡Te esperamos!</p>
+        <p className="text-gray-800 text-lg font-bold text-center mb-8">¡Te esperamos desde el lunes 13 al domingo 19 de enero 2025!</p>
         <h2 className="text-3xl font-bold text-center text-green-700 mb-6">Formulario de Inscripción 🎵</h2>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
