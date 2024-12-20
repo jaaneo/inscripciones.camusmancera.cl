@@ -383,7 +383,7 @@ const Formulario: React.FC = () => {
             type="submit"
             className="w-full py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700"
           >
-            Enviar Inscripción 🚀
+            Enviar inscripción 🚀
           </button>
         </form>
       </div>
