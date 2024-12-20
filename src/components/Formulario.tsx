@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
 import logo from "../assets/logo_camusmancera.jpg";
 import emailjs from "emailjs-com";
@@ -43,18 +43,79 @@ const Formulario: React.FC = () => {
     enlace_video: "",
   });
 
-  const [rutError, setRutError] = useState(""); // Mensaje de error para el RUT
+  const [rutError, setRutError] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [emojiPositions, setEmojiPositions] = useState<{ top: string; left: string }[]>([]);
 
-  const [emojiStyles] = useState(
-    Array.from({ length: 30 }).map(() => ({
+  // Generar posiciones iniciales para los emojis al cargar el componente
+  useEffect(() => {
+    const posiciones = Array.from({ length: 30 }).map(() => ({
       top: `${Math.random() * 100}%`,
       left: `${Math.random() * 100}%`,
-      animationDuration: `${5 + Math.random() * 5}s`,
-    }))
-  );
+    }));
+    setEmojiPositions(posiciones);
+  }, []);
 
-  // Función para validar RUT
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+
+    if (name === "rut") {
+      const cleanRut = value.replace(/\./g, "").replace("-", "");
+      const formattedRut = cleanRut.slice(0, -1).replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "-" + cleanRut.slice(-1);
+      setFormData({ ...formData, [name]: formattedRut });
+      setRutError(!validarRut(formattedRut) ? "RUT inválido. Intentalo nuevamente." : "");
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (rutError) {
+      alert("Por favor, corrige el RUT antes de enviar.");
+      return;
+    }
+
+    const { error } = await supabase.from("inscripciones").insert([formData]);
+    if (error) {
+      console.error("Error al guardar en la base de datos:", error);
+      return;
+    }
+
+    emailjs
+      .send(
+        "service_1uwva1g",
+        "template_4idald3",
+        {
+          to_name: formData.nombre,
+          to_email: formData.email,
+          message: `Hola ${formData.nombre}, tu inscripción al Campamento Musical ha sido recibida correctamente.`,
+        },
+        "F6aNFV9s2jLy1roD1"
+      )
+      .then(() => console.log("Correo enviado correctamente."))
+      .catch((err) => console.error("Error al enviar el correo:", err));
+
+    setModalVisible(true);
+    setFormData({
+      nombre: "",
+      apellidos: "",
+      email: "",
+      rut: "",
+      edad: "",
+      direccion: "",
+      ciudad_comuna: "",
+      telefono_participante: "",
+      telefono_apoderado: "",
+      instrumento: "",
+      nivel: "",
+      anios_estudio: "",
+      profesor: "",
+      enlace_video: "",
+    });
+  };
+
   const validarRut = (rut: string): boolean => {
     const cleanRut = rut.replace(/\./g, "").replace("-", "");
     if (cleanRut.length < 8 || cleanRut.length > 9) return false;
@@ -76,122 +137,31 @@ const Formulario: React.FC = () => {
     return dv === dvEsperado.toString();
   };
 
-  // Función para formatear RUT automáticamente
-  const formatearRut = (rut: string): string => {
-    const cleanRut = rut.replace(/\./g, "").replace("-", "");
-    if (cleanRut.length <= 1) return cleanRut;
-
-    const cuerpo = cleanRut.slice(0, -1);
-    const dv = cleanRut.slice(-1);
-    return cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".") + "-" + dv;
-  };
-
-  // Actualizar campos del formulario
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-
-    // Formatear y validar RUT
-    if (name === "rut") {
-      const rutFormateado = formatearRut(value);
-      setFormData({ ...formData, [name]: rutFormateado });
-
-      if (!validarRut(rutFormateado)) {
-        setRutError("RUT inválido. Por favor, verifica.");
-      } else {
-        setRutError("");
-      }
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
-  };
-
-  // Enviar formulario
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Verificar si el RUT es válido
-    if (rutError) {
-      alert("Por favor, corrige el RUT antes de enviar.");
-      return;
-    }
-
-    // Guardar datos en la base de datos
-    const { error } = await supabase.from("inscripciones").insert([formData]);
-    if (error) {
-      console.error("Error al guardar en la base de datos:", error);
-      return;
-    }
-
-    // Enviar correo de confirmación con EmailJS
-    emailjs
-      .send(
-        "service_1uwva1g", // Reemplaza con tu Service ID
-        "template_4idald3", // Reemplaza con tu Template ID
-        {
-          to_name: formData.nombre,
-          to_email: formData.email,
-          message: `Hola ${formData.nombre}, tu inscripción al Campamento Musical ha sido recibida correctamente.`,
-        },
-        "F6aNFV9s2jLy1roD1" // Tu Public Key
-      )
-      .then(() => {
-        console.log("Correo enviado correctamente.");
-      })
-      .catch((err) => {
-        console.error("Error al enviar el correo:", err);
-      });
-
-    // Mostrar modal de confirmación
-    setModalVisible(true);
-
-    // Resetear formulario
-    setFormData({
-      nombre: "",
-      apellidos: "",
-      email: "",
-      rut: "",
-      edad: "",
-      direccion: "",
-      ciudad_comuna: "",
-      telefono_participante: "",
-      telefono_apoderado: "",
-      instrumento: "",
-      nivel: "",
-      anios_estudio: "",
-      profesor: "",
-      enlace_video: "",
-    });
-  };
-
   return (
     <div className="relative min-h-screen bg-gradient-to-br from-green-400 via-yellow-300 to-orange-400 p-4 flex items-center justify-center overflow-hidden">
       {/* Emojis flotantes */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-        {emojiStyles.map((style, i) => (
+        {emojiPositions.map((pos, index) => (
           <div
-            key={i}
+            key={index}
             className="absolute text-4xl animate-float"
             style={{
-              ...style,
-              fontSize: "2rem",
+              top: pos.top,
+              left: pos.left,
+              animationDuration: `${5 + Math.random() * 5}s`,
             }}
           >
-            {emojisFlotantes[i % emojisFlotantes.length]}
+            {emojisFlotantes[index % emojisFlotantes.length]}
           </div>
         ))}
       </div>
 
-      {/* Modal */}
+      {/* Modal de confirmación */}
       {modalVisible && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-          style={{ zIndex: 9999 }}
-        >
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
-            <h2 className="text-2xl font-bold text-green-700 mb-4">¡Inscripción Enviada!</h2>
-            <p className="text-gray-700">
-              Gracias por inscribirte al Campamento Musical. Te hemos enviado un correo de confirmación.
-            </p>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
+            <h2 className="text-2xl font-bold text-green-700 mb-4">¡Inscripción Enviada!✈️</h2>
+            <p className="text-gray-700 text-center">Gracias por inscribirte al Campamento Musical Marqués de Mancera 2025🎵</p>
             <button
               className="mt-4 w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700"
               onClick={() => setModalVisible(false)}
@@ -207,15 +177,25 @@ const Formulario: React.FC = () => {
         <div className="flex justify-center mb-6">
           <img src={logo} alt="Campamento Musical" className="w-32 h-auto" />
         </div>
-
-        <h1 className="text-4xl font-bold text-center text-green-700 mb-4">
-          ¿QUÉ ES EL CAMPAMENTO MUSICAL?
-        </h1>
+        <h1 className="text-4xl font-bold text-center text-green-700 mb-4">¿QUÉ ES EL CAMPAMENTO MUSICAL?</h1>
         <p className="text-gray-700 text-lg leading-7 mb-8 text-justify">
-          El <b>Campamento Musical Marqués de Mancera</b> es un espacio formativo para niños, niñas y adolescentes.
+          El <b>Campamento Musical Marqués de Mancera</b> es un espacio formativo para niños, niñas y adolescentes. Fue
+          creado bajo la premisa de reunir en un mismo lugar a todos quienes buscan mejorar sus conocimientos y
+          habilidades en la interpretación de diversos instrumentos.
         </p>
+        <p className="text-gray-700 text-lg leading-7 mb-8 text-justify">
+          La actividad se realizó durante sus primeros años en la Isla Mancera, no obstante su crecimiento obligó a
+          buscar nuevas dependencias en Niebla y Valdivia. De esta forma se ha proyectado como el campamento más
+          importante del sur de Chile.
+        </p>
+        <p className="text-gray-700 text-lg leading-7 mb-8 text-justify">
+          Somos una gran comunidad que cada año suma nuevos integrantes y que se mantiene activa en el compromiso de la
+          generación de espacios seguros para el desarrollo de habilidades artísticas que sabemos contribuyen a tener
+          una mejor sociedad.
+        </p>
+        <p className="text-gray-800 text-lg font-bold text-center mb-8">¡Te esperamos!</p>
+        <h2 className="text-3xl font-bold text-center text-green-700 mb-6">Formulario de Inscripción 🎵</h2>
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Campos del formulario */}
           <div>
             <label className="block text-lg font-medium">Nombre</label>
             <input
