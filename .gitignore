@@ -1,0 +1,71 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependency directories
+node_modules
+jspm_packages/
+dist/
+dist-ssr/
+.bower_components
+
+# Build artifacts
+*.local
+*.lock
+*.gz
+*.zip
+*.tar
+*.tgz
+
+# Coverage directories
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+
+# Editor directories and files
+.vscode/
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env.*
+
+# Debugging files
+*.pid
+*.seed
+*.pid.lock
+
+# ESLint and Prettier files
+.eslintcache
+.prettiercache
+
+# Parcel-bundler cache
+.cache
+
+# TypeScript files
+*.tsbuildinfo
+
+# Other
+.npm/
+.pnpm-debug.log
+yarn-error.log
