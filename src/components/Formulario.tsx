@@ -7,17 +7,12 @@ const instrumentos = [
   "Violín",
   "Viola",
   "Violoncello",
-  "Contra bajo",
-  "Guitarra Clásica",
+  "Contrabajo",
   "Flauta",
   "Clarinete",
   "Corno Francés",
   "Trompeta",
   "Trombón",
-  "Percusión",
-  "Batería",
-  "Saxofón",
-  "Sección Ritmica de Jazz",
 ];
 
 const niveles = ["Inicial - Básico", "Intermedio - Avanzado"];
@@ -191,7 +186,7 @@ const Formulario: React.FC = () => {
           generación de espacios seguros para el desarrollo de habilidades artísticas que sabemos contribuyen a tener
           una mejor sociedad.
         </p>
-        <p className="text-gray-800 text-lg font-bold text-center mb-8">¡Te esperamos desde el Lunes 13 al Sábado 18 de enero 2025!</p>
+        <p className="text-gray-800 text-lg font-bold text-center mb-8">¡Te esperamos para la Jornada Clásica Sinfónica <br /> Desde el Lunes 27 de enero hasta el Sábado 01 de febrero 2025!</p>
         <h2 className="text-3xl font-bold text-center text-green-700 mb-6">Formulario de Inscripción 🎵</h2>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
