@@ -16,7 +16,7 @@ const instrumentos = [
 ];
 
 const niveles = ["Inicial - Básico", "Intermedio - Avanzado"];
-const emojisFlotantes = ["🎻", "🎷", "🎺", "🥁", "🎸", "🎵", "🎶", "😍", "❤️"];
+const emojisFlotantes = ["🎻", "🎷", "🎺", "🥁", "🎵", "🎶", "😍", "❤️"];
 
 const Formulario: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -78,14 +78,14 @@ const Formulario: React.FC = () => {
 
     emailjs
       .send(
-        "service_1uwva1g",
-        "template_4idald3",
+        "service_m9cabtj",
+        "template_8ess78n",
         {
           to_name: formData.nombre,
           to_email: formData.email,
           message: `Hola ${formData.nombre}, tu inscripción al Campamento Musical ha sido recibida correctamente.`,
         },
-        "F6aNFV9s2jLy1roD1"
+        "cXhOlPyVPr2ofBg7h"
       )
       .then(() => console.log("Correo enviado correctamente."))
       .catch((err) => console.error("Error al enviar el correo:", err));
@@ -186,7 +186,7 @@ const Formulario: React.FC = () => {
           generación de espacios seguros para el desarrollo de habilidades artísticas que sabemos contribuyen a tener
           una mejor sociedad.
         </p>
-        <p className="text-gray-800 text-lg font-bold text-center mb-8">¡Te esperamos para la Jornada Clásica Sinfónica <br /> Desde el Lunes 27 de enero hasta el Sábado 01 de febrero 2025!</p>
+        <p className="text-gray-800 text-lg font-bold text-center mb-8">¡Te esperamos para la Jornada Clásica Sinfónica <br /> Desde el Lunes 17 de febrero hasta el Sábado 23 de febrero 2025!</p>
         <h2 className="text-3xl font-bold text-center text-green-700 mb-6">Formulario de Inscripción 🎵</h2>
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
