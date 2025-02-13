@@ -1,11 +1,11 @@
 import React from "react";
-import Formulario from "./components/Formulario";
+import Anuncio from "./components/Anuncio";
 import { Analytics } from "@vercel/analytics/react";
 
 function App() {
   return (
     <>
-      <Formulario />
+      <Anuncio />
       <Analytics /> {/* Agrega Vercel Analytics aquí */}
     </>
   );
